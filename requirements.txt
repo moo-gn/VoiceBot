@@ -1,0 +1,3 @@
+openai
+py-cord
+PyNaCl

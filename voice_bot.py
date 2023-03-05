@@ -6,17 +6,38 @@ import sys
 sys.path.append("..")
 import credentials
 
+from voice_utils import get_transcript_from_audio_data
+
 bot = discord.Bot(case_insensitive = True, intents=discord.Intents.all())
 connections = {}
 
+
 async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  # Our voice client already passes these in.
+
+    # Filter bots out
+    for user_id in list(sink.audio_data.keys()):
+        user = await bot.fetch_user(user_id)
+        if user.bot:
+            del sink.audio_data[user_id]
+
     recorded_users = [  # A list of recorded users
         f"<@{user_id}>"
-        for user_id, audio in sink.audio_data.items()
+        for user_id, _ in sink.audio_data.items()
     ]
+
     await sink.vc.disconnect()  # Disconnect from the voice channel.
-    files = [discord.File(audio.file, f"{user_id}.{sink.encoding}") for user_id, audio in sink.audio_data.items()]  # List down the files.
-    await channel.send(f"finished recording audio for: {', '.join(recorded_users)}.", files=files)  # Send a message with the accumulated files.
+
+    # Prepare files for transcription
+    input_audio_data = {
+        f"<@{user_id}>": audio.file
+        for user_id, audio in sink.audio_data.items()
+    }
+
+    transcript = get_transcript_from_audio_data(input_audio_data)
+
+    await channel.send(f"finished recording audio for: {', '.join(recorded_users)}.")  # Send a message with the accumulated files.
+    await channel.send(f"Transcript:\n{transcript}")  # Send a message with the accumulated files.
+
 
 #say hello
 @bot.slash_command(guild_ids=[credentials.guild_id] , description="start")
@@ -57,4 +78,4 @@ async def stop(ctx):
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot) + ' ' + datetime.datetime.utcnow().strftime("%m/%d/%Y %H:%M:%S UTC"))
 
-bot.run(credentials.Music_Test)
+bot.run(credentials.VOICE_BOT_TOKEN)
