@@ -12,8 +12,33 @@ bot = discord.Bot(case_insensitive = True, intents=discord.Intents.all())
 connections = {}
 
 
-async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  # Our voice client already passes these in.
+class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
+    def __init__(self, ctx, vc):
+        super().__init__()
+        self.ctx = ctx
+        self.vc = vc
+    @discord.ui.button(label="Start", style=discord.ButtonStyle.primary, emoji="🔴")
+    async def start(self, button, interaction):
+        await interaction.response.edit_message(content = "recording....")   
+        self.vc.start_recording(
+            discord.sinks.WaveSink(),  # The sink type to use.
+            once_done,  # What to do once done.
+            self.ctx.channel  # The channel to disconnect from.
+        )
 
+    @discord.ui.button(label="Stop", style=discord.ButtonStyle.primary, emoji="⬜")
+    async def stop(self, button, interaction):
+        if self.ctx.guild.id in connections:  # Check if the guild is in the cache.
+            self.vc = connections[self.ctx.guild.id]
+            self.vc.stop_recording()  # Stop recording, and call the callback (once_done).
+            await interaction.response.edit_message(content = "You Can Started recording!",  view=MyView(self.ctx,self.vc))
+        else:
+            await self.ctx.respond("I am currently not recording here.")  # Respond with this if we aren't recording.
+
+
+
+async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  # Our voice client already passes these in.
+    msg = await channel.send("Wait...")
     # Filter bots out
     for user_id in list(sink.audio_data.keys()):
         user = await bot.fetch_user(user_id)
@@ -25,8 +50,6 @@ async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  
         for user_id, _ in sink.audio_data.items()
     ]
 
-    await sink.vc.disconnect()  # Disconnect from the voice channel.
-
     # Prepare files for transcription
     input_audio_data = {
         f"<@{user_id}>": audio.file
@@ -35,41 +58,33 @@ async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  
 
     transcript = get_transcript_from_audio_data(input_audio_data)
 
-    await channel.send(f"finished recording audio for: {', '.join(recorded_users)}.")  # Send a message with the accumulated files.
+    await msg.edit(f"finished recording audio for: {', '.join(recorded_users)}.")  # Send a message with the accumulated files.
     await channel.send(f"Transcript:\n{transcript}")  # Send a message with the accumulated files.
 
 
 #say hello
-@bot.slash_command(guild_ids=[credentials.guild_id] , description="start")
-async def start(ctx :discord.context):
-    voice = ctx.author.voice
-
-    if not voice:
+@bot.slash_command(guild_ids=[credentials.guild_id] , description="Join")
+async def join(ctx :discord.context):
+    if not ctx.author.voice:
         await ctx.respond("You aren't in a voice channel!")
-
-    vc = await voice.channel.connect()  # Connect to the voice channel the author is in.
+        
+    vc = await ctx.author.voice.channel.connect()  # Connect to the voice channel the author is in.
     connections.update({ctx.guild.id: vc})  # Updating the cache with the guild and channel.
-
-    vc.start_recording(
-        discord.sinks.WaveSink(),  # The sink type to use.
-        once_done,  # What to do once done.
-        ctx.channel  # The channel to disconnect from.
-    )
-    await ctx.respond("Started recording!")
+    await ctx.respond("You Can Started recording!", view = MyView(ctx, vc))
 
 
 
 
 
-@bot.slash_command(guild_ids=[credentials.guild_id] , description="stop")
-async def stop(ctx):
+@bot.slash_command(guild_ids=[credentials.guild_id] , description="Leave")
+async def leave(ctx):
     if ctx.guild.id in connections:  # Check if the guild is in the cache.
         vc = connections[ctx.guild.id]
-        vc.stop_recording()  # Stop recording, and call the callback (once_done).
+        await vc.disconnect()  # Disconnect from the voice channel.
         del connections[ctx.guild.id]  # Remove the guild from the cache.
         await ctx.delete()  # And delete.
     else:
-        await ctx.respond("I am currently not recording here.")  # Respond with this if we aren't recording.
+        await ctx.respond("I am currently not Connected")  # Respond with this if we aren't recording.
 
 
 
