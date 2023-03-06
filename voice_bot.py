@@ -14,7 +14,7 @@ connections = {}
 
 class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
     def __init__(self, ctx, vc):
-        super().__init__()
+        super().__init__(timeout=None)
         self.ctx = ctx
         self.vc = vc
     @discord.ui.button(label="Start", style=discord.ButtonStyle.primary, emoji="🔴")
