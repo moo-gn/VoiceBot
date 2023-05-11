@@ -56,7 +56,11 @@
    ```sh
    git clone https://github.com/moo-gn/VoiceBot.git
    ```
-2. Enter your API keys in `config.js`
+2. Install requirements using Pip
+  ```sh
+  pip install -r requirements.txt
+  ```
+3. Enter your API keys in `config.js`
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
