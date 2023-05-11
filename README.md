@@ -35,9 +35,9 @@
 
 ### Built With
 
-* [Python](https://www.python.org/) - A high-level programming language for general-purpose programming.
-* [ChatGPT API](https://openai.com/blog/chat-with-gpt-3/) - A powerful natural language processing API created by OpenAI.
-* [Python Whisper API](https://whisper-python.readthedocs.io/en/latest/) - A Python library for working with the Discord API.
+* [Python](https://www.python.org/)
+* [ChatGPT API](https://openai.com/blog/chat-with-gpt-3/)
+* [Python Whisper API](https://whisper-python.readthedocs.io/en/latest/)
 
 ### Built By
 * [Ghaith](https://www.linkedin.com/in/ghaith-khoja/) & [Zuair](https://www.linkedin.com/in/azuair/) & [Hamdan](https://www.linkedin.com/in/mhalhamdan/)
