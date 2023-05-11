@@ -1,5 +1,6 @@
 from whisper import Whisper
 
+# Create Whisper class instance
 model = Whisper()
 
 def transcript_to_string(transcript: list) -> str:

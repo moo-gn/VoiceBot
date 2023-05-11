@@ -1,11 +1,7 @@
 import discord
-from discord.ext import commands
 import datetime
-
-import sys
-sys.path.append("..")
-import credentials
-
+from discord.ext import commands
+from credentials import DISCORD_BOT_TOKEN
 from voice_utils import get_transcript_from_audio_data
 
 bot = discord.Bot(case_insensitive = True, intents=discord.Intents.all())
@@ -93,4 +89,4 @@ async def leave(ctx):
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot) + ' ' + datetime.datetime.utcnow().strftime("%m/%d/%Y %H:%M:%S UTC"))
 
-bot.run(credentials.VOICE_BOT_TOKEN)
+bot.run(DISCORD_BOT_TOKEN)

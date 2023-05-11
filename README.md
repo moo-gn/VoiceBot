@@ -48,7 +48,6 @@
 ### Prerequisites
 1. Get a Discord Bot Token [Discord Bot Token Guide](https://www.writebots.com/discord-bot-token/)
 2. Get an OpenAI API Key at [OpenAI API](https://platform.openai.com/account/api-keys)
-3. Get a Whisper API key at [Whisper API](https://whisperapi.com/)
 
 ### Installation
 
@@ -60,9 +59,10 @@
   ```sh
   pip install -r requirements.txt
   ```
-3. Enter your API keys in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+3. Enter your API keys in `credentials.py`
+   ```python
+   DISCORD_BOT_TOKEN = "ENTER DISCORD TOKEN HERE"
+   OPENAI_API_TOKEN = "ENTER OPENAPI KEY HERE"
    ```
 
 <!-- USAGE EXAMPLES -->
@@ -76,8 +76,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Call the bot to hear input using Discord Buttons instead of text input.
-- [ ] Convert the ChatGPT text response back to speech using text-to-speech synthesis and deliver it to the voice channel.
+- [ ] Have the option to convert the ChatGPT text response back to speech using text-to-speech synthesis and deliver it to the voice channel.
 
 
 <!-- LICENSE -->
