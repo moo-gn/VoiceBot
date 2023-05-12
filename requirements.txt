@@ -1,3 +1,4 @@
 openai
 py-cord
 PyNaCl
+tiktoken

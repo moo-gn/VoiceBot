@@ -1,40 +1,50 @@
 import discord
 import datetime
-from discord.ext import commands
 from credentials import DISCORD_BOT_TOKEN
-from voice_utils import get_transcript_from_audio_data
+from utils import get_transcripts_from_audio_data, answer_prompts
 
+# Init bot
 bot = discord.Bot(case_insensitive = True, intents=discord.Intents.all())
 connections = {}
 
-
 class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
+    """a class that subclasses discord.ui.View that will display buttons to control the bot
+    """
     def __init__(self, ctx, vc):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.vc = vc
+        
+    # Button that starts recording
     @discord.ui.button(label="Start", style=discord.ButtonStyle.primary, emoji="🔴")
     async def start(self, button, interaction):
         await interaction.response.edit_message(content = "recording....")   
         self.vc.start_recording(
             discord.sinks.WaveSink(),  # The sink type to use.
-            once_done,  # What to do once done.
+            once_done,  # callback function after recording is finished.
             self.ctx.channel  # The channel to disconnect from.
         )
 
+    # Button that stops recording
     @discord.ui.button(label="Stop", style=discord.ButtonStyle.primary, emoji="⬜")
     async def stop(self, button, interaction):
         if self.ctx.guild.id in connections:  # Check if the guild is in the cache.
             self.vc = connections[self.ctx.guild.id]
             self.vc.stop_recording()  # Stop recording, and call the callback (once_done).
-            await interaction.response.edit_message(content = "You Can Started recording!",  view=MyView(self.ctx,self.vc))
+            await interaction.response.edit_message(content = "You Can Start recording!",  view=MyView(self.ctx,self.vc))
         else:
             await self.ctx.respond("I am currently not recording here.")  # Respond with this if we aren't recording.
 
 
 
-async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  # Our voice client already passes these in.
-    msg = await channel.send("Wait...")
+async def once_done(sink: discord.sinks, channel: discord.TextChannel):
+    """Callback function after recording is finished. Process audio input and pass it to chatGPT, then send response in chat.
+
+    Args:
+        sink (discord.sinks): Audio Sink
+        channel (discord.TextChannel): Channel to send reponse in
+    """
+    msg = await channel.send("Creating response...")
     # Filter bots out
     for user_id in list(sink.audio_data.keys()):
         user = await bot.fetch_user(user_id)
@@ -52,28 +62,43 @@ async def once_done(sink: discord.sinks, channel: discord.TextChannel, *args):  
         for user_id, audio in sink.audio_data.items()
     }
 
-    transcript = get_transcript_from_audio_data(input_audio_data)
+    # Get all transcripts of prompts
+    transcripts = get_transcripts_from_audio_data(input_audio_data)
+    await msg.edit(f"finished recording prompts for: {', '.join(recorded_users)}.")  # Send a message to notify that recording finished.
+    
+    # Send prompt responses
+    await answer_prompts(transcripts, channel) # Sends answers for users prompts
 
-    await msg.edit(f"finished recording audio for: {', '.join(recorded_users)}.")  # Send a message with the accumulated files.
-    await channel.send(f"Transcript:\n{transcript}")  # Send a message with the accumulated files.
 
 
 #say hello
-@bot.slash_command(guild_ids=[credentials.guild_id] , description="Join")
-async def join(ctx :discord.context):
+@bot.slash_command(description="Join")
+async def join(ctx: discord.context):
+    """Command join that lets the bot join the voice channel
+
+    Args:
+        ctx (discord.context): Discord Context
+    """
+    # If the user calling the bot is not in voice channel
     if not ctx.author.voice:
         await ctx.respond("You aren't in a voice channel!")
         
     vc = await ctx.author.voice.channel.connect()  # Connect to the voice channel the author is in.
     connections.update({ctx.guild.id: vc})  # Updating the cache with the guild and channel.
-    await ctx.respond("You Can Started recording!", view = MyView(ctx, vc))
+    # Send recording view
+    await ctx.respond("You Can Start recording!", view = MyView(ctx, vc))
 
 
 
 
 
-@bot.slash_command(guild_ids=[credentials.guild_id] , description="Leave")
-async def leave(ctx):
+@bot.slash_command(description="Leave")
+async def leave(ctx: discord.context):
+    """Command leave that lets the bot leave the voice channel
+
+    Args:
+        ctx (discord.context): Discord context
+    """
     if ctx.guild.id in connections:  # Check if the guild is in the cache.
         vc = connections[ctx.guild.id]
         await vc.disconnect()  # Disconnect from the voice channel.
@@ -87,6 +112,9 @@ async def leave(ctx):
 #login event
 @bot.event
 async def on_ready():
+    """Prints message to console once we successfully load the bot
+    """
     print('We have logged in as {0.user}'.format(bot) + ' ' + datetime.datetime.utcnow().strftime("%m/%d/%Y %H:%M:%S UTC"))
 
+# Run bot
 bot.run(DISCORD_BOT_TOKEN)
