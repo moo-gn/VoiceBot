@@ -83,6 +83,9 @@
     ```sh
     /leave
     ```
+ <br/>
+ Here is an example where I asked the the voice bot for a pasta recipe!
+    <img width="897" alt="Screenshot 2023-05-12 at 3 27 36 PM" src="https://github.com/moo-gn/VoiceBot/assets/13292277/30cb44cd-fc20-4c2b-ad3d-9ba6c0323131">
 
 
 <!-- ROADMAP -->
@@ -90,6 +93,9 @@
 
 - [ ] Have the option to convert the ChatGPT text response back to speech using text-to-speech synthesis and play the response in the voice channel.
 - [ ] Add voice commands.
+- [ ] Make interface more user friendly. For example, remove record button and only stop recording when we are in the recording phase
+- [ ] Improve the messages displayed to the user. Add the option to view the prompt recorded
+- [ ] Make the user have the ability to change the join/leave commands to words of their choosing
 
 
 <!-- LICENSE -->
