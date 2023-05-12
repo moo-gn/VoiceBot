@@ -56,30 +56,33 @@
    git clone https://github.com/moo-gn/VoiceBot.git
    ```
 2. Install requirements using Pip
-  ```sh
-  pip install -r requirements.txt
-  ```
+    ```sh
+    pip install -r requirements.txt
+    ```
 3. Enter your API keys in `credentials.py`
    ```python
    DISCORD_BOT_TOKEN = "ENTER DISCORD TOKEN HERE"
    OPENAI_API_TOKEN = "ENTER OPENAPI KEY HERE"
    ```
+4. Run the main driver
+    ```sh
+    python3 voice_bot.py
+    ```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 1. Command the bot to join the voice channel using 
-```sh
-/join
-```
-in a discord text channel
+    ```sh
+    /join
+    ```
 2. Click the 🔴 button to start recording your prompt
 3. Click the ⬜ button to stop recording
 4. Find your response in the text channel you asked the bot to join from 
 5. Command the bot to leave the voice channel using
-```sh
-/leave
-```
+    ```sh
+    /leave
+    ```
 
 
 <!-- ROADMAP -->
