@@ -89,6 +89,7 @@
 ## Roadmap
 
 - [ ] Have the option to convert the ChatGPT text response back to speech using text-to-speech synthesis and play the response in the voice channel.
+- [ ] Add voice commands.
 
 
 <!-- LICENSE -->
