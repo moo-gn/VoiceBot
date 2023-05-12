@@ -68,15 +68,24 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+1. Command the bot to join the voice channel using 
+```sh
+/join
+```
+in a discord text channel
+2. Click the 🔴 button to start recording your prompt
+3. Click the ⬜ button to stop recording
+4. Find your response in the text channel you asked the bot to join from 
+5. Command the bot to leave the voice channel using
+```sh
+/leave
+```
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Have the option to convert the ChatGPT text response back to speech using text-to-speech synthesis and deliver it to the voice channel.
+- [ ] Have the option to convert the ChatGPT text response back to speech using text-to-speech synthesis and play the response in the voice channel.
 
 
 <!-- LICENSE -->
