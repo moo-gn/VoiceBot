@@ -23,7 +23,7 @@ async def ask_chatgpt(user_id: int, prompt: str, channel: discord.TextChannel) -
     """
 
     response = chatgpt.ask(user_id, prompt)
-    await send_response(channel, response)
+    await send_response(user_id, channel, response)
 
 
 async def send_response(user_id: int, channel: discord.TextChannel, response: str) -> None:
@@ -45,7 +45,7 @@ async def send_response(user_id: int, channel: discord.TextChannel, response: st
         response = response[index:]
         # Send the intial message
         if not message:
-            message = channel.send(f"<@{user_id}> {to_send}")
+            message = await channel.send(f"<@{user_id}> {to_send}")
         # Reply to the message
         else:
             await message.reply(to_send)
@@ -60,7 +60,7 @@ async def answer_prompts(transcripts: list, channel: discord.TextChannel) -> Non
     
     # For each transcript answer
     for transcript in transcripts:
-        await ask_chatgpt(transcript['user_id'], transcript['prompt'], channel)
+        await ask_chatgpt(transcript['user_id'], transcript['text'], channel)
 
 
 

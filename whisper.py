@@ -35,7 +35,9 @@ class Whisper:
         transcript = openai.Audio.transcribe(
             model=self.model, 
             file=open(input_audio_file.name, mode="rb"),
-            response_format="verbose_json"
+            response_format="verbose_json",
+            prompt="this is an excerpt from a particular user in a voice chat, they may be talking in english or arabic, but try to parse all of the text to english",
+            language="en"
         )
 
         return transcript
